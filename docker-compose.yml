@@ -1,0 +1,66 @@
+version: '3.7'
+services:
+  api:
+    build: watame
+    restart: always
+    env_file: conf/watame.env
+    depends_on:
+      - session
+      - db
+    volumes:
+      - 'imgvolume:/storage'
+      - './certbot/conf/:/etc/letsencrypt/:ro'
+    ports:
+      - '8081:443'
+    networks:
+      - backend
+  website:
+    build: moth
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - './conf/nginx/:/etc/nginx/conf.d/:ro'
+      - './certbot/www/:/var/www/certbot/:ro'
+      - './certbot/conf/:/etc/nginx/ssl/:ro'
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - './certbot/www/:/var/www/certbot/:rw'
+      - './certbot/conf/:/etc/letsencrypt/:rw'
+  session:
+    image: 'redis:alpine'
+    restart: always
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      timeout: 20s
+      interval: 3s
+      retries: 10
+    networks:
+      - backend
+  db:
+    build: ./postgres
+    restart: always
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - '-q'
+        - '-h'
+        - db
+        - '-U'
+        - watame
+      timeout: 20s
+      interval: 3s
+      retries: 10
+    networks:
+      - backend
+networks:
+  backend:
+    driver: bridge
+volumes:
+  imgvolume: null

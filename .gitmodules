@@ -1,0 +1,9 @@
+[submodule "watame"]
+	path = watame
+	url = https://github.com/serxka/watame
+[submodule "moth"]
+	path = moth
+	url = https://github.com/serxka/moth
+[submodule "postgres/tag_parser"]
+	path = postgres/tag_parser
+	url = https://github.com/serxka/tag_parser
