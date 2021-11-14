@@ -11,7 +11,7 @@ services:
       - 'imgvolume:/storage'
       - './certbot/conf/:/etc/letsencrypt/:ro'
     ports:
-      - '8081:443'
+      - '8443:443'
     networks:
       - backend
   website:
